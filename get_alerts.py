@@ -4,7 +4,7 @@ Get alerts from threatstack and pass to csv
 import argparse
 import datetime
 import csv
-import pdb
+import os
 import requests
 
 API_ENDPOINT = 'https://app.threatstack.com/api/v1/alerts'
@@ -22,7 +22,10 @@ def get_alerts(args):
     headers = {'Authorization': args.auth, 'Organization': args.org}
     resp = requests.get(API_ENDPOINT, params=data, headers=headers)
     if resp.status_code == 200:
-        with open(args.out, 'wb') as csvfile:
+        filename = args.out
+        if filename[0] != '/':
+            filename = os.getcwd() + filename
+        with open(filename, 'wb') as csvfile:
             fieldnames = args.fields.split(',')
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
@@ -30,7 +33,7 @@ def get_alerts(args):
                 writer.writerow(alert)
             print "Successfully wrote values to {}".format(args.out)
     else:
-        print "Error querying api."
+        print "Error querying api: {}".format(resp.text)
 
 
 if __name__ == '__main__':
@@ -52,7 +55,7 @@ if __name__ == '__main__':
                         help='the name (or path including csv) of the csv file to output',
                         dest='out',
                         required=False,
-                        default='alerts.csv')
+                        default=os.getcwd()+'/'+'alerts.csv')
 
     ARGS = PARSER.parse_args()
 
