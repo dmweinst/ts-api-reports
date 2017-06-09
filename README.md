@@ -12,6 +12,6 @@ For help:
 
 Use [pyinstaller](https://pythonhosted.org/PyInstaller/operating-mode.html):
 
-`pyinstaller --onefile get_alerts.py`
+`pyinstaller get_alerts.spec`.
 
 Mac executable ends up in `dist/get_alerts`.

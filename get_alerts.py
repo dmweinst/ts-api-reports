@@ -9,11 +9,31 @@ import requests
 
 API_ENDPOINT = 'https://app.threatstack.com/api/v1/alerts'
 
-'''
-severity
-last_updated_at
-title
-'''
+TIMESTAMP_FIELDS = ['created_at', 'expires_at', 'last_updated_at']
+def format_timestamps(alert):
+    '''
+    Convert timestamps into times
+    '''
+    for field in TIMESTAMP_FIELDS:
+        if field in alert:
+            alert[field] = datetime.datetime.strptime(alert[field], '%Y-%m-%dT%H:%M:%S.%fZ')
+            alert[field] = datetime.datetime.strftime(alert[field], '%Y-%m-%d %H:%M:%S')
+    return alert
+
+def include_alert(alert, args):
+    '''
+    Determine whether alert should be included
+    Return True if included, False otherwise
+    '''
+    title = alert.get('title')
+    if not title:
+        return True
+    if args.startswith:
+        return title.startswith(args.startswith)
+    if args.contains:
+        return args.contains in title
+    return True
+
 def get_alerts(args):
     '''
     Query api for alerts
@@ -30,7 +50,9 @@ def get_alerts(args):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for alert in resp.json():
-                writer.writerow(alert)
+                if include_alert(alert, args):
+                    alert = format_timestamps(alert)
+                    writer.writerow(alert)
             print "Successfully wrote values to {}".format(args.out)
     else:
         print "Error querying api: {}".format(resp.text)
@@ -56,6 +78,17 @@ if __name__ == '__main__':
                         dest='out',
                         required=False,
                         default=os.getcwd()+'/'+'alerts.csv')
+    FILTER = PARSER.add_mutually_exclusive_group()
+    FILTER.add_argument('--startswith',
+                        help='filter to titles that start with this string',
+                        dest='startswith',
+                        required=False,
+                        default=None)
+    FILTER.add_argument('--contains',
+                        help='filter to titles that contain with this string',
+                        dest='contains',
+                        required=False,
+                        default=None)
 
     ARGS = PARSER.parse_args()
 
