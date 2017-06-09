@@ -48,7 +48,8 @@ def get_alerts(args):
         with open(filename, 'wb') as csvfile:
             fieldnames = args.fields.split(',')
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
+            if not args.omitheader:
+                writer.writeheader()
             for alert in resp.json():
                 if include_alert(alert, args):
                     alert = format_timestamps(alert)
@@ -78,6 +79,7 @@ if __name__ == '__main__':
                         dest='out',
                         required=False,
                         default=os.getcwd()+'/'+'alerts.csv')
+    PARSER.add_argument('--omitheader', action='store_true', default=False, dest='omitheader')
     FILTER = PARSER.add_mutually_exclusive_group()
     FILTER.add_argument('--startswith',
                         help='filter to titles that start with this string',
