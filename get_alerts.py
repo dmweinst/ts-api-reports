@@ -45,7 +45,7 @@ def get_alerts(args):
         filename = args.out
         if filename[0] != '/':
             filename = os.getcwd() + filename
-        with open(filename, 'wb') as csvfile:
+        with open(filename, 'w') as csvfile:
             fieldnames = args.fields.split(',')
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             if not args.omitheader:
@@ -54,9 +54,9 @@ def get_alerts(args):
                 if include_alert(alert, args):
                     alert = format_timestamps(alert)
                     writer.writerow(alert)
-            print "Successfully wrote values to {}".format(args.out)
+            print("Successfully wrote values to " + args.out)
     else:
-        print "Error querying api: {}".format(resp.text)
+        print("Error querying api: " + resp.text)
 
 
 if __name__ == '__main__':
