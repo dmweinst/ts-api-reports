@@ -16,33 +16,33 @@ def main():
     '''
     Main method. Collect command line arguments, and pass them into the get_alerts method
     '''
-    PARSER = argparse.ArgumentParser(description='Query threatstack alerts.')
-    PARSER.add_argument('--auth', help='authentication token', dest='auth', required=True)
-    PARSER.add_argument('--org', help='organization', dest='org', required=True)
-    PARSER.add_argument('--fields', help='the fields to return from the api', dest='fields',
+    parser = argparse.ArgumentParser(description='Query threatstack alerts.')
+    parser.add_argument('--auth', help='authentication token', dest='auth', required=True)
+    parser.add_argument('--org', help='organization', dest='org', required=True)
+    parser.add_argument('--fields', help='the fields to return from the api', dest='fields',
                         required=False, default='severity,last_updated_at,title')
-    PARSER.add_argument('--start', help='start date', dest='start',
+    parser.add_argument('--start', help='start date', dest='start',
                         required=False,
                         default=datetime.datetime.utcnow() - datetime.timedelta(days=1))
-    PARSER.add_argument('--end', help='end date', dest='end',
+    parser.add_argument('--end', help='end date', dest='end',
                         required=False,
                         default=datetime.datetime.utcnow())
-    PARSER.add_argument('--count', help='number of alerts to return', dest='count',
+    parser.add_argument('--count', help='number of alerts to return', dest='count',
                         required=False,
                         default=20)
-    PARSER.add_argument('--outfile',
+    parser.add_argument('--outfile',
                         help='the name (or path including csv) of the csv file to output',
                         dest='out',
                         required=False,
                         default=os.getcwd()+'/'+'alerts.csv')
-    PARSER.add_argument('--omitheader', action='store_true', default=False, dest='omitheader')
-    PARSER.add_argument('--filters', help = 'filters to apply', dest = 'filters', required = False)
+    parser.add_argument('--omitheader', action='store_true', default=False, dest='omitheader')
+    parser.add_argument('--filters', help = 'filters to apply', dest = 'filters', required = False)
 
-    ARGS = PARSER.parse_args()
-    if ARGS.filters:
-        ARGS.filters = ARGS.filters.split(' and ')
+    args = parser.parse_args()
+    if args.filters:
+        args.filters = args.filters.split(' and ')
 
-    get_alerts(ARGS)
+    get_alerts(args)
 
 def format_timestamps(alert):
     '''
