@@ -100,14 +100,26 @@ def include_alert(alert, args):
             operator = split_filter[1]
             value = split_filter[2]
 
-            #Sometimes, the "value" field will contain multiple spaces in a row
+            #Sometimes, "alert[field]" will contain multiple spaces in a row
             #This causes issues with our comparison
             #Therefore, we're going to replace all instances of multiple spaces with a single space
-            alert[field] = re.sub('\s+', ' ', alert[field])
-            print(operator)
+            if field in alert:
+                alert[field] = re.sub('\s+', ' ', str(alert[field]))
 
             if operator == "=":
                 if not equals_filter(alert, field, value):
+                    matches_filter = False
+
+            elif operator == "like":
+                if not like_filter(alert, field, value):
+                    matches_filter = False
+
+            elif operator == "starts_with":
+                if not starts_with_filter(alert, field, value):
+                    matches_filter = False
+
+            elif operator == "ends_with":
+                if not ends_with_filter(alert, field, value):
                     matches_filter = False
 
     return matches_filter
@@ -115,7 +127,7 @@ def include_alert(alert, args):
 
 def equals_filter(alert, field, value):
     '''
-    This method is called when a filter uses the "equals" operator
+    This method is called when a filter uses the "=" operator
     '''
     #The default state of "match" is True
     match = True
@@ -125,6 +137,51 @@ def equals_filter(alert, field, value):
         match = False
     #If the field specified DOES exist in the JSON, we'll check to see if its value matches the specified value
     elif not (alert[field] == value):
+        match = False
+    return match
+
+def like_filter(alert, field, value):
+    '''
+    This method is called when a filter uses the "like" operator
+    '''
+    #The default state of "match" is True
+    match = True
+
+    #If the field specified doesn't exist in the JSON, we're going to treat it as not matching
+    if not field in alert:
+        match = False
+    #If the field specified DOES exist in the JSON, we'll check to see if its value matches the specified value
+    elif not (value in alert[field]):
+        match = False
+    return match
+
+def starts_with_filter(alert, field, value):
+    '''
+    This method is called when a filter uses the "starts_with" operator
+    '''
+    #The default state of "match" is True
+    match = True
+
+    #If the field specified doesn't exist in the JSON, we're going to treat it as not matching
+    if not field in alert:
+        match = False
+    #If the field specified DOES exist in the JSON, we'll check to see if its value matches the specified value
+    elif not (alert[field].startswith(value)):
+        match = False
+    return match
+
+def ends_with_filter(alert, field, value):
+    '''
+    This method is called when a filter uses the "ends_with" operator
+    '''
+    #The default state of "match" is True
+    match = True
+
+    #If the field specified doesn't exist in the JSON, we're going to treat it as not matching
+    if not field in alert:
+        match = False
+    #If the field specified DOES exist in the JSON, we'll check to see if its value matches the specified value
+    elif not (alert[field].endswith(value)):
         match = False
     return match
 
