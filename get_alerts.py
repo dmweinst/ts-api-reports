@@ -86,7 +86,6 @@ def include_alert(alert, args):
 
     #Iterate over each of the filters that were passed in
     if args.filters:
-        print('Hello, there!')
         for raw_filter in args.filters:
             #Split each of the filters apart
             split_filter = raw_filter.split()
@@ -118,7 +117,6 @@ def equals_filter(alert, field, value):
     '''
     This method is called when a filter uses the "equals" operator
     '''
-    print('General Kenobi!')
     #The default state of "match" is True
     match = True
 
@@ -127,10 +125,7 @@ def equals_filter(alert, field, value):
         match = False
     #If the field specified DOES exist in the JSON, we'll check to see if its value matches the specified value
     elif not (alert[field] == value):
-        print('\n\n\n\n\n\n\n\n\n\n\n' + alert[field] + ' does not equal\n' + value)
         match = False
-    else:
-        print('\n\n\n\n\n\n\n\n\n\n\n' + alert[field] + ' equals ' + value)
     return match
 
 def get_alerts(args):
