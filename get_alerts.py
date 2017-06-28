@@ -37,17 +37,6 @@ def main():
                         default=os.getcwd()+'/'+'alerts.csv')
     PARSER.add_argument('--omitheader', action='store_true', default=False, dest='omitheader')
     PARSER.add_argument('--filters', help = 'filters to apply', dest = 'filters', required = False)
-    FILTER = PARSER.add_mutually_exclusive_group()
-    FILTER.add_argument('--startswith',
-                        help='filter to titles that start with this string',
-                        dest='startswith',
-                        required=False,
-                        default=None)
-    FILTER.add_argument('--contains',
-                        help='filter to titles that contain with this string',
-                        dest='contains',
-                        required=False,
-                        default=None)
 
     ARGS = PARSER.parse_args()
     if ARGS.filters:
@@ -70,15 +59,6 @@ def include_alert(alert, args):
     Determine whether alert should be included
     Return True if included, False otherwise
     '''
-    #This is a legacy section of code
-    # title = alert.get('title')
-    # if not title:
-    #     return
-    # if args.startswith:
-    #     return title.startswith(args.startswith)
-    # if args.contains:
-    #     return args.contains in title
-    # return True
 
     #The default state of whether an alert matches is True
     #If we find a reason for the alert not to match, this value will be set to false
